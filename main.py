@@ -14,13 +14,16 @@ PW = os.environ.get("PW")
 options = Options()
 options.add_argument('--headless')
 driver = webdriver.Chrome(options=options)
+wait = WebDriverWait(driver, 30)
 
 driver.get(URL)
+wait.until(
+    EC.presence_of_element_located((By.ID, "username"))
+)
 driver.find_element(by=By.ID, value='username').send_keys(ID)
 driver.find_element(by=By.ID, value='password').send_keys(PW)
 driver.find_element(by=By.ID, value='Login').submit()
 
-wait = WebDriverWait(driver, 30)
 wait.until(
     EC.presence_of_element_located((By.ID, "mainTableBody"))
 )
