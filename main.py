@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import date
 
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -8,6 +9,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
+
+# １日以外はスキップするための条件
+if __name__ == "__main__":
+    today = date.today().day
+    if today != 1:
+        print(f"Job skipped: today is {today}th, not 1st")
+        sys.exit()
 
 URL = os.environ.get("URL")
 ID = os.environ.get("ID")
@@ -48,7 +56,6 @@ rows = table.find_elements(by=By.XPATH, value="tr[contains(@class, 'days')]")
 workdays = []
 for row in rows:
     if '通常出勤日' in row.find_element(by=By.XPATH, value='td[contains(@class, "vstatus")]').get_attribute('title'):
-        # print(row.get_attribute('id'))
         workdays.append(row)
 
 # 終了日探索用カーソル
@@ -67,7 +74,6 @@ def modal_close(workday):
     calendar = current_tab.find_element(by=By.XPATH, value=".//input[contains(@id, 'dialogApplyEndDateCal')]")
     # 再申請の場合「から」がチェック済み
     if 'dis' in calendar.get_attribute('class'):
-        print("新規")
         current_tab.find_element(by=By.XPATH, value=".//input[contains(@id, 'dialogApplyRangeOn')]").click()
     calendar.click()
     # カレンダーが表示されるまで待機
@@ -87,7 +93,6 @@ for i, workday in enumerate(workdays):
     if i < cur:
         continue
     elif i == cur and in_progress:
-        print(f"i = {i}")
         modal_close(workday)
     else:
         in_progress = True
@@ -119,7 +124,6 @@ for i, workday in enumerate(workdays):
         # 勤務日がどこまで続くか探索
         # 最終勤務日はループに入らない（インデックスエラー起こす）
         while cur + 1 < length:
-            print(f"i = {i}, cur = {cur}")
             d = int(workdays[cur + 1].get_attribute('id').split("-")[-1])
             if d - day == 1:
                 day += 1
