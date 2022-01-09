@@ -11,11 +11,11 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
 # １日以外はスキップするための条件
-if __name__ == "__main__":
-    today = date.today().day
-    if today != 1:
-        print(f"Job skipped: today is {today}th, not 1st")
-        sys.exit()
+# if __name__ == "__main__":
+#     today = date.today().day
+#     if today != 1:
+#         print(f"Job skipped: today is {today}th, not 1st")
+#         sys.exit()
 
 URL = os.environ.get("URL")
 ID = os.environ.get("ID")
@@ -82,6 +82,7 @@ def modal_close(workday):
     )
     # 勤務時間変更申請の終了日
     day = int(workday.get_attribute('id').split("-")[-1])
+    print(f'終了日：{day}日')
     # カレンダーで終了日をクリック
     driver.find_element(by=By.XPATH, value=f"//td[contains(@class, 'dijitCalendarEnabledDate')]/span[text()='{str(day)}']").click()
     # 「承認申請」／「再申請」をクリック
@@ -120,6 +121,7 @@ for i, workday in enumerate(workdays):
         Select(select_pattern_element).select_by_index(9)
         # 勤務時間変更申請の開始日
         day = int(workday.get_attribute('id').split("-")[-1])
+        print(f'開始日：{day}日')
 
         # 勤務日がどこまで続くか探索
         # 最終勤務日はループに入らない（インデックスエラー起こす）
