@@ -1,4 +1,5 @@
 import os
+import sys
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -14,12 +15,26 @@ PW = os.environ.get("PW")
 options = Options()
 options.add_argument('--headless')
 driver = webdriver.Chrome(options=options)
-wait = WebDriverWait(driver, 60)
+wait = WebDriverWait(driver, 30)
 
-driver.get(URL)
-wait.until(
-    EC.presence_of_element_located((By.ID, "username"))
-)
+count = 0
+while count < 5:
+    try:
+        driver.get(URL)
+        wait.until(
+            EC.presence_of_element_located((By.ID, "username"))
+        )
+    except TimeoutException:
+        if count < 4:
+            print("ログイン画面を再読込します。")
+            count += 1
+        else:
+            print("ログインに失敗しました。")
+            sys.exit(1)
+    else:
+        print(driver.title)
+        break
+
 driver.find_element(by=By.ID, value='username').send_keys(ID)
 driver.find_element(by=By.ID, value='password').send_keys(PW)
 driver.find_element(by=By.ID, value='Login').submit()
