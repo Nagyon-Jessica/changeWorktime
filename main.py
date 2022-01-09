@@ -14,7 +14,7 @@ PW = os.environ.get("PW")
 options = Options()
 options.add_argument('--headless')
 driver = webdriver.Chrome(options=options)
-wait = WebDriverWait(driver, 30)
+wait = WebDriverWait(driver, 60)
 
 driver.get(URL)
 wait.until(
